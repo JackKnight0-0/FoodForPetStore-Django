@@ -1,0 +1,46 @@
+{% extends '__base.html' %}
+
+{% block title %}{{ folder.name }}{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="card card-footer">
+            <h1>{{ folder.name }}</h1>
+        </div>
+        {% for item in folder.get_items_no_size %}
+            <div class="card card-body">
+
+                <a href="{{ item.get_absolute_url }}" class="link">{{ item.name }}</a>
+                <img src="{{ item.images.first.image_of_item.url }}" width="200" height="200">
+                <form method="post" action="{% url 'delete_item' item.pk %}">{% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                <div class="d-flex">
+                    <a href="{% url 'update_item' item.pk %}" class="btn btn-outline-primary">Update data</a>
+                    <a class="btn btn-outline-secondary" href="{% url 'add_size' item.pk %}">Add size</a>
+                </div>
+            </div>
+            {% if item.get_sizes %}
+                <div class="card-footer">
+                    <h2>Item sizes:</h2>
+                    {% for item in item.get_sizes %}
+                        <a href="{{ item.get_absolute_url }}">{{ item.size }}</a>
+                        <form method="post" action="{% url 'delete_item' item.pk %}">{% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                            <a href="{% url 'update_item' item.pk %}" class="btn btn-outline-primary">Update data</a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% if not folder.items.all %}
+            <div class="card card-footer-">
+                <a class="btn btn-success" href="{% url 'new_item' folder.slug %}">Add new item</a>
+            </div>
+        {% else %}
+            <div class="card card-footer">
+                <a class="btn btn-outline-primary" href="{% url 'add_flavor' folder.slug %}">Add flavor</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

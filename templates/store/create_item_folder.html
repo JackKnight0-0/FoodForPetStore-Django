@@ -1,0 +1,14 @@
+{% extends '__base.html' %}
+
+{% block title %}New Item Folder{% endblock title %}
+
+
+{% block content %}
+    <form method="post" class="form-control">{% csrf_token %}
+        {% for error in form.non_field_errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+        {% endfor %}
+        {{ form.as_p }}
+        <button class="btn btn-success">Create</button>
+    </form>
+{% endblock content %}

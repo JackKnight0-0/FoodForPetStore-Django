@@ -1,0 +1,77 @@
+{% extends '__base.html' %}
+
+{% block title %}My Cart{% endblock title %}
+
+{% block head %}
+    <script src="https://js.stripe.com/v3/"></script> {% endblock head %}
+
+
+{% block content %}
+    <section class="h-100">
+        <div class="container h-100 py-5">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-10">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
+                        {% include 'store/includes/sort_by_price.html' %}
+                    </div>
+                    {% for item in items %}
+                        <div class="card rounded-3 mb-4">
+                            <div class="card-body p-4">
+                                <div class="row d-flex justify-content-between align-items-center">
+                                    <div class="col-md-2 col-lg-2 col-xl-2">
+                                        <img
+                                                src="{{ item.item.images.first.image_of_item.url }}"
+                                                class="img-fluid rounded-3" alt="...">
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-xl-3">
+                                        <p class="lead fw-normal mb-2">{{ item.item.name }}</p>
+                                        <p><span class="text-muted">Size: </span>{{ item.item.size }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                        <form method="post"
+                                              action="{% url 'remove_add_cart_item' item.item.pk %}">{% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-primary" name="op"
+                                                    value="decrease">-
+                                            </button>
+                                            {{ item.quantity }}
+                                            <button type="submit" class="btn btn-outline-primary" name="op"
+                                                    value="increase">+
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                    <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                        <h5 class="mb-0">${{ item.item.price }}</h5>
+                                        <form method="post"
+                                              action="{% url 'delete_item_from_cart' item.item.pk %}">{% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Remove</button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="card">
+                        <div class="card-body">
+                            {% if cart.items.all %}
+                                <h1>Total price: ${{ cart.total_amount }}</h1>
+                            {% endif %}
+                            {% if items %}
+                                <form method="post" action="{% url 'checkout' %}">{% csrf_token %}
+                                    <button type="button" class="btn btn-success w-100">Checkout</button>
+                                </form>
+                            {% else %}
+                                <h1>Your cart is empty</h1>
+                                <a href="{% url 'home' %}">Continue shopping</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

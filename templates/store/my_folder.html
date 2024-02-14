@@ -1,0 +1,18 @@
+{% extends '__base.html' %}
+
+{% block title %}My folders{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        {% for folder in folders.all %}
+            <div class="card card-body">
+                <a href="{{ folder.get_absolute_url }}">{{ folder.name }}</a>
+                <p>Items: {{ folder.items.count }}</p>
+                <form action="{% url 'delete_folder' folder.slug %}" method="post">{% csrf_token %}
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        {% endfor %}
+        <a class="btn btn-success" href="{% url 'new_folder' %}">Add new folder</a>
+    </div>
+{% endblock content %}

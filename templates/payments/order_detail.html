@@ -1,0 +1,55 @@
+{% extends '__base.html' %}
+
+
+{% block title %}My order{% endblock title %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="card card-body">
+            <div class="card card-header text-center" >
+                <h1>Order Detail</h1>
+            </div>
+            <p>Check for your order detail.</p>
+            <p>Name: {{ order.name }}</p>
+            <p>Email: {{ order.email }}</p>
+            <p>City: {{ order.city }}</p>
+            <p>Country: {{ order.country }}</p>
+            <p>Address: {{ order.address }}</p>
+            {% if order.ship_number %}
+                <p>Ship number: {{ order.ship_number }}</p>
+            {% endif %}
+            <p></p>
+            <p class=
+                       {% if order.status == 'PENDING' %}
+                           "alert alert-warning"
+                       {% elif order.status == 'SENT' %}
+                           "alert alert-light"
+                       {% elif order.status == 'DELIVERED' %}
+                           "alert alert-success"
+                       {% else %}
+                           "alert alert-danger"
+                       {% endif %}
+            >Status: {{ order.status }}
+            </p>
+        </div>
+        <div class="card card-footer">
+            {% for item in order.items.all %}
+                <p>Name of product: {{ item.item.name }}</p>
+                <p>Quantity: {{ item.quantity }}</p>
+                <p>Price: {{ item.item.price }}$</p>
+                <img src="{{ item.item.images.all.first.image_of_item.url }}" class="img-thumbnail"
+                     style="width: 250px; height: 250px">
+            {% endfor %}
+            <p>Sum of order: ${{ order.total_amount }}</p>
+        </div>
+        {% if user.is_staff %}
+            <form method="post" action="{% url 'order_change_status' order.slug %}" class="form-control">{% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-outline-primary">Change</button>
+            </form>
+        {% endif %}
+
+
+    </div>
+{% endblock content %}

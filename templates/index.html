@@ -1,0 +1,109 @@
+{% extends '__base.html' %}
+{% load static %}
+
+
+{% block title %}Pet Store{% endblock title %}
+
+{% block content %}
+    <!-- Header-->
+    <header class="bg-dark d-flex justify-content-center align-items-center" style="height: 500px">
+        <div class="text-center text-black" style="position: absolute; z-index: 999">
+            <h1 class="display-4 fw-bolder">Pet Store</h1>
+            <p class="lead fw-normal fw-bold">The best for our little friends</p>
+        </div>
+        <img src="{% static 'img/home.jpg' %}"
+             style="min-width: 100%; max-height: 100%; flex-shrink: 0; overflow: hidden">
+    </header>
+    <!-- Section-->
+    <div class="container">
+        <h1 class="text-center my-5">Shop by animal</h1>
+        <div class="row">
+
+            {% for animal in animals %}
+                <div class="col-md-4">
+                    <a href="{% url 'cat_animal' animal.name|slugify %}">
+                        <div class="animal-card text-center">
+                            <img src="{{ animal.image.url }}" class="rounded-circle" style="height: 222px; width: 222px"
+                                 alt="Cat">
+                            <h2 class="text-center">{{ animal.name }}</h2>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 mt-5">
+            {% include 'store/includes/sort_by_price.html' %}
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                {% for item in page_obj.object_list %}
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Product image-->
+                            <img class="card-img-top" src="{{ item.images.first.image_of_item.url }}" height="300px"
+                                 width="450px" alt="..."/>
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">{{ item.name }}</h5>
+                                    <!-- Product price-->
+                                    ${{ item.price }}
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto"
+                                                            href="{{ item.get_absolute_url }}">View options</a>
+                                </div>
+                            </div>
+                            <form class="card-footer p-4 pt-0 border-top-0 bg-transparent" method="post"
+                                  action="{% url 'add_item_to_cart' item.pk %}">{% csrf_token %}
+                                <div class="text-center">
+                                    <button class="btn btn-outline-primary"
+                                    >Add to cart
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </section>
+    {% if page_obj.has_other_pages %}
+        <ul class="pagination align-items-center justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for page in paginator.page_range %}
+                {% if page != page_obj.number and page >  page_obj.number|add:-3 and page < page_obj.number|add:3 %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                {% elif page == page_obj.number %}
+                    <li class="page-item active" aria-current="page"><a class="page-link"
+                                                                        href="?page={{ page }}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+    <!-- Footer-->
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; PetStore 2024</p></div>
+    </footer>
+
+
+{% endblock content %}

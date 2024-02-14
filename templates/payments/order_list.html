@@ -1,0 +1,15 @@
+{% extends '__base.html' %}
+
+
+{% block title %}My orders{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        {% for order in orders %}
+            <div class="card-body">
+                <h1><a href="{{ order.get_absolute_url }}">#{{ order.pk }}</a></h1>
+                <p>Status: {{ order.status }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
